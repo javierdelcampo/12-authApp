@@ -1,6 +1,9 @@
 import { Component } from '@angular/core';
 import { FormGroup, FormBuilder, Validators } from '@angular/forms';
 import { Router } from '@angular/router';
+import { AuthService } from '../../services/auth.service';
+
+import Swal from "sweetalert2";
 
 @Component({
   selector: 'app-login',
@@ -17,12 +20,26 @@ export class LoginComponent {
   });
 
   constructor( private fb: FormBuilder,
-               private router: Router ) { }
+               private router: Router,
+               private authService: AuthService ) { }
 
   login() {
+
     console.log(this.miFormulario.value);
+    const { email, password } = this.miFormulario.value;
     
-    this.router.navigateByUrl('/dashboard');
+    this.authService.login( email, password )
+      .subscribe  ( ok => {   // Comprobamos el ok
+
+        console.log(ok);
+        
+        if ( ok === true ) {  
+          this.router.navigateByUrl('/dashboard');   // Si es correcto, navegamos al dashboard
+        } else {
+          Swal.fire('Error', ok, 'error')
+        }
+
+      });
     
   }
 
